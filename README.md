@@ -36,7 +36,7 @@ This repo contains the expected end result of a series of prompts to Gemini Code
 
 6. **Create package.json**
 
-   "*Generate a package.json for this project including a start script*"
+   "*Generate a package.json for this project including scripts for start and test*"
 
    Create a `package.json` according to the instructions.
 
@@ -68,6 +68,55 @@ This repo contains the expected end result of a series of prompts to Gemini Code
       - Replace all placeholders with their respective values
       - Create the Artifact Registry repo before moving on to the next step
 
+
+   **Fallback:**
+   
+   In case Gemini doesn't come up with a response regarding Cloud Build you may:
+
+   1. Use the `cloudbuild.yaml` from this repo
+
+      - Add the following permissions to the default Compute Engine Service Account:
+        - `logging.logWriter` (e.g. "Logs Writer" role)
+        - `artifactregistry.repositories.uploadArtifacts` (e.g. "Artifact Registry Writer" role)
+
+      - Trigger Cloud Build
+
+        ```bash
+        gcloud builds submit --config cloudbuild.yaml
+        ```
+
+      - If you encounter an `AccessDeniedException: 403` error, add the `storage.objects.viewer` permission (e.g. "Storage Object Viewer" role) to the default Compute Engine Service Account
+
+   2. Don't use Cloud Build
+
+     ```bash
+     docker build -t gcr.io/[YOUR_PROJECT_ID]/[YOUR_REPO_NAME] .
+     ```
+
+     ```bash
+     docker push gcr.io/[YOUR_PROJECT_ID]/[YOUR_REPO_NAME]
+     ```
+
 3. **Deploying to Cloud Run**
 
    The explanations to the previous prompt should have also given instructions on how to use the `gcloud run deploy [...]` command
+
+   **Fallback:**
+
+   In case Gemini didn't come up with the `gcloud run deploy [...]` command you may:
+
+   1. Deploy from Artifact Registry
+
+      Use this if you deployed using `cloudbuild.yaml`
+
+      ```bash
+      gcloud run deploy my-service --image us-central1-docker.pkg.dev/[YOUR_PROJECT_ID]/[YOUR_REPO_NAME]/my-service:latest --region us-central1 --platform managed --allow-unauthenticated
+      ```
+
+   2. Deploy from GCR
+
+      Use this if you deployed to GCR
+
+      ```bash
+      gcloud run deploy my-service --image gcr.io/[YOUR_PROJECT_ID]/[YOUR_REPO_NAME] --region us-central1 --allow-unauthenticated
+      ```

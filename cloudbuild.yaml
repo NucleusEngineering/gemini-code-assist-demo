@@ -4,12 +4,12 @@ steps:
       [
         'build',
         '-t',
-        'us-central1-docker.pkg.dev/[YOUR_PROJECT_ID]/[YOUR_REPO]/your-app:latest',
+        'us-central1-docker.pkg.dev/[YOUR_PROJECT_ID]/[YOUR_REPO]/my-service:latest',
         '.',
       ]
   - name: 'gcr.io/cloud-builders/docker'
     args:
       [
         'push',
-        'us-central1-docker.pkg.dev/[YOUR_PROJECT_ID]/[YOUR_REPO]/your-app:latest',
+        'us-central1-docker.pkg.dev/[YOUR_PROJECT_ID]/[YOUR_REPO]/my-service:latest',
       ]
